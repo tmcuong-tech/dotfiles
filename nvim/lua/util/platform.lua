@@ -108,6 +108,13 @@ function M.asm_syntax(path, lines)
   local ext = (path:match("%.([%w]+)$") or ""):lower()
   local default_nasm = ext == "asm" or ext == "nasm"
   local gas, nasm = 0, 0
+  local nasm_directives = {
+    bits = true,
+    default = true,
+    extern = true,
+    global = true,
+    section = true,
+  }
 
   for _, line in ipairs(lines) do
     -- Strip comments/most string noise before matching.
@@ -118,10 +125,8 @@ function M.asm_syntax(path, lines)
     if code:match("^%s*%.[%a_]") then
       gas = gas + 1
     end
-    if code:match("^%s*[%[%]%s]*section%s") or code:match("^%s*section%s") then
-      nasm = nasm + 1
-    end
-    if code:match("^%s*(global|extern|bits|default|%%include|%%define)%s") then
+    local directive = code:match("^%s*([%a_]+)")
+    if (directive and nasm_directives[directive:lower()]) or code:match("^%s*%%[%a_]+") then
       nasm = nasm + 1
     end
   end
