@@ -28,8 +28,11 @@ return {
         },
 
         clangd = {
-          -- clangd 23 needs an explicit value; the LazyVim default flag
-          -- without a value is rejected on startup.
+          -- Neovim 0.12 expects `cmd` to be a table of arguments (a function
+          -- has a different, low-level meaning there). Mason's bin directory
+          -- is put on PATH in init.lua, so resolving "clangd" from PATH works
+          -- on Windows and Linux alike.
+          -- clangd 23 needs an explicit value for --function-arg-placeholders.
           cmd = {
             "clangd",
             "--background-index",
