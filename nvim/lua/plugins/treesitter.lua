@@ -11,6 +11,9 @@ return {
         "rust",
         "asm",
         "query", -- useful when editing treesitter queries / highlights
+        -- Extra parser used by render-markdown.nvim for LaTeX blocks
+        -- (markdown, markdown_inline, html and yaml come from LazyVim).
+        "latex",
       })
     end,
   },
