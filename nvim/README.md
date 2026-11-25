@@ -3,10 +3,19 @@
 A starter template for [LazyVim](https://github.com/LazyVim/LazyVim).
 Refer to the [documentation](https://lazyvim.github.io/installation) to get started.
 
+## Minimum requirements
+
+- **Neovim 0.12.0 or newer**, built with LuaJIT.
+- **Git 2.19 or newer.**
+
+These are the minimum versions for this configuration. See [First-time setup](#first-time-setup)
+for language tools and other optional dependencies.
+
 ## IDE features
 
 | Feature | Implementation | Config file |
 | --- | --- | --- |
+| Startup dashboard | Alpha (LazyVim `ui.alpha` extra) | `lazyvim.json`, `lua/plugins/alpha.lua` |
 | LSP (C/C++, Python, Rust, Assembly) | `nvim-lspconfig` + LazyVim language extras | `lua/plugins/lsp.lua` |
 | Diagnostics while typing (insert mode) | `update_in_insert = true` + `tiny-inline-diagnostic.nvim` | `lua/plugins/diagnostics.lua` |
 | Completion / signatures / snippets | `blink.cmp` (LSP, paths, snippets, buffer; auto docs and ghost text) | `lua/plugins/completion.lua` |
@@ -23,12 +32,13 @@ Refer to the [documentation](https://lazyvim.github.io/installation) to get star
 Each file under `lua/plugins/` returns lazy.nvim plugin specs. Add a file there
 to extend the setup. Specs for the same plugin are merged; dependencies,
 priorities, and load events determine when plugins load, not filenames.
+LazyVim extras are recorded in `lazyvim.json` so LazyVim can load them in its
+supported dependency order on every machine.
 
 ## First-time setup
 
 ### Prerequisites (Windows and Linux)
 
-- Neovim 0.12.0 or newer, built with LuaJIT; Git 2.19 or newer.
 - Node.js is needed by Mason's `pyright` and `prettier` packages.
 - `curl`, `tar`, a C compiler, and `tree-sitter` CLI 0.26.1 or newer. Install
   the CLI from the OS package manager (not npm); the locked Treesitter main
@@ -87,7 +97,7 @@ Icons look best with a Nerd Font configured in the terminal.
 
 | Command / key | Action |
 | --- | --- |
-| `<leader>mr` or `:RenderMarkdown buf_toggle` | Toggle rendering for the current buffer |
+| `:RenderMarkdown buf_toggle` | Toggle rendering for the current buffer |
 | `:RenderMarkdown toggle` | Toggle rendering globally |
 | `:RenderMarkdown preview` | Open a rendered preview window |
 | `:RenderMarkdownFull` | Force a full-buffer render (useful after an update) |
@@ -115,44 +125,61 @@ If a future release changes that internal module, the override is guarded with
 `pcall` and the config warns instead of erroring, falling back to upstream's
 visible-window rendering. After any update, run `:checkhealth render-markdown`.
 
-## Completion
+## Keymap guide
 
-`blink.cmp` suggests LSP completions, file paths, snippets, and words from the
-current buffer. Documentation opens automatically after a short delay; ghost
-text previews the selected completion, and signature help is enabled.
+`<leader>` is **Space**. The table includes mappings configured by this setup
+and the debugger mappings provided by its enabled LazyVim extra. Unless noted,
+use the mappings in Normal mode.
 
-| Key | Action |
-| --- | --- |
-| `<C-Space>` | Open the completion menu |
-| `<C-y>` | Accept the selected completion |
-| `<CR>` | Confirm a completion using Blink's `enter` preset |
+| Key | Mode | Action |
+| --- | --- | --- |
+| `<Tab>` / `<S-Tab>` | Normal | Go to the next / previous buffer |
+| `<C-Space>` | Insert | Open the completion menu |
+| `<C-y>` | Insert | Accept the selected completion |
+| `<CR>` | Insert | Confirm a completion using Blink's `enter` preset |
+| `<leader>rb` | Normal | Build or syntax-check the current file (C, C++, Assembly, Rust, Python) |
+| `<leader>rr` | Normal | Run the current file in a terminal |
+| `<leader>rd` | Normal | Start or continue debugging |
+| `<leader>rn` | Normal | Step over in the debugger |
+| `<leader>db` | Normal | Toggle breakpoint |
+| `<leader>dB` | Normal | Set a conditional breakpoint |
+| `<leader>dc` | Normal | Run or continue debugging; choose a configuration if prompted |
+| `<leader>da` | Normal | Run or continue with arguments |
+| `<leader>dC` | Normal | Run to cursor |
+| `<leader>dg` | Normal | Move execution to a line without running it |
+| `<leader>di` / `<leader>do` / `<leader>dO` | Normal | Step into / step out / step over |
+| `<leader>dj` / `<leader>dk` | Normal | Move down / up the call stack |
+| `<leader>dl` | Normal | Run the last debug configuration |
+| `<leader>dP` | Normal | Pause debugging |
+| `<leader>dr` | Normal | Toggle the DAP REPL; in Rust buffers, open Rust debuggables |
+| `<leader>ds` | Normal | Show the debug session |
+| `<leader>dt` | Normal | Terminate debugging |
+| `<leader>dw` | Normal | Show debugger widgets |
+| `<leader>du` | Normal | Toggle the DAP UI |
+| `<leader>de` | Normal / Visual | Evaluate expression under cursor / selected text |
+| `<leader>ch` | Normal | Switch between C/C++ source and header |
+| `<leader>uX` | Normal | Toggle inline diagnostics |
+| `<leader>mr` | Normal | Toggle Markdown rendering in the current buffer |
+| `<leader>gg` / `<leader>gG` | Normal | Open LazyGit at the Git root / current directory |
+| `<leader>lg` | Normal | Open LazyGit through `lazygit.nvim` |
+| `<leader>Gs` / `<leader>Gc` / `<leader>Gp` / `<leader>Gu` | Normal | Fugitive status / commit / push / pull |
+| `<leader>mt` | Normal | Toggle the merge-conflict tool |
+| `<leader>vc` / `<leader>vs` / `<leader>vr` | Normal | Vimspector continue / stop / restart |
+| `<leader>vb` / `<leader>vB` | Normal | Vimspector toggle / conditional breakpoint |
+| `<leader>vn` / `<leader>vi` / `<leader>vo` | Normal | Vimspector step over / into / out |
+| `<leader>ve` | Normal / Visual | Evaluate value under cursor / selected text in Vimspector |
+| `<F5>` / `<F3>` / `<F4>` | Normal | Vimspector continue / stop / restart (`HUMAN` mappings) |
 
-## Keymaps (in addition to the LazyVim defaults)
+Completion suggestions include LSP results, paths, snippets, and words from the
+current buffer. Documentation opens automatically, with ghost-text previews and
+signature help enabled. Formatting runs on save for configured filetypes.
 
-| Key | Action |
-| --- | --- |
-| `<leader>rb` | Build current file |
-| `<leader>rr` | Run current file in a terminal |
-| `<leader>rd` | Start / continue debugging |
-| `<leader>rn` | Debug: step over |
-| `<leader>db` | Toggle breakpoint |
-| `<leader>dc` | Start / continue debugging |
-| `<leader>di` / `<leader>do` / `<leader>dO` | Step into / out / over |
-| `<leader>du` | Toggle the DAP UI |
-| `<leader>de` | Evaluate expression under cursor |
-| `<leader>dr` | REPL (Rust buffers: RustLsp debuggables) |
-| `<leader>ch` | Switch C/C++ source ↔ header |
-| `<leader>uX` | Toggle inline diagnostics |
-| `<leader>mr` | Toggle Markdown rendering for the current buffer |
-| `<leader>gg` / `<leader>gG` | LazyVim LazyGit at the Git root / current directory |
-| `<leader>lg` | Open LazyGit through `lazygit.nvim` |
-| `<leader>Gs` / `<leader>Gc` / `<leader>Gp` / `<leader>Gu` | Fugitive status / commit / push / pull |
-| `<leader>vc` / `<leader>vs` / `<leader>vr` | Vimspector continue / stop / restart |
-| `<leader>vb` / `<leader>vB` | Vimspector toggle / conditional breakpoint |
-| `<leader>vn` / `<leader>vi` / `<leader>vo` | Vimspector step over / into / out |
-| `<leader>ve` | Evaluate value or visual selection in Vimspector |
-| `<F5>` / `<F3>` / `<F4>` | Vimspector continue / stop / restart (`HUMAN` mappings) |
+The standard LazyVim mappings are also available and can vary by filetype and
+installed extra. Press `<leader>` and wait for the WhichKey menu to browse the
+available actions; `:map` lists active mappings. The Markdown preview commands
+`:RenderMarkdown toggle`, `:RenderMarkdown preview`, and `:RenderMarkdownFull`
+are also available; `<leader>mr` toggles rendering for the current buffer.
 
-Debug configurations are chosen with `<leader>dc` when more than one is
-available (for example *Build & Debug current file (gdb)* vs *Launch binary
+When multiple debug configurations are available, `<leader>dc` prompts you to
+choose one (for example, *Build & Debug current file (gdb)* or *Launch binary
 (CodeLLDB)*).
