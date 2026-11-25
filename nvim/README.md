@@ -15,12 +15,12 @@ Refer to the [documentation](https://lazyvim.github.io/installation) to get star
 | Linting | clangd (clang-tidy), ruff LSP, rust-analyzer | `lua/plugins/linting.lua` |
 | Parsers / filetypes | `nvim-treesitter` + assembly filetype detection | `lua/plugins/treesitter.lua`, `lua/config/options.lua` |
 | Assembly live errors | `gcc` / `nasm` check on the unsaved buffer | `lua/util/asm.lua`, `lua/config/autocmds.lua` |
-| Tool installation | `mason.nvim` + manual `asm-lsp` binary | `lua/plugins/mason.lua` |
+| Tool installation | Mason plus Cargo or a matching release binary for `asm-lsp` | `lua/plugins/mason.lua` |
 | Markdown preview | `render-markdown.nvim` (full-buffer) | `lua/plugins/render-markdown.lua` |
 
-Every file under `lua/plugins/` is a standalone lazy.nvim spec. Add a new file
-there to extend the setup without touching the others. lazy.nvim loads them in
-alphabetical order, so use that if one spec needs to override another.
+Each file under `lua/plugins/` returns lazy.nvim plugin specs. Add a file there
+to extend the setup. Specs for the same plugin are merged; dependencies,
+priorities, and load events determine when plugins load, not filenames.
 
 ## First-time setup
 
@@ -48,6 +48,14 @@ alphabetical order, so use that if one spec needs to override another.
    For NASM projects, add a `.asm-lsp.toml` with `[opts] compiler = "nasm"` so
    `asm-lsp` does not apply its default GCC/GAS diagnostics to NASM syntax.
 6. Run `:checkhealth` and `:Lazy health` to verify the installation.
+
+## Colorschemes
+
+Gruvbox is the startup theme. Tokyo Night is also installed with transparent
+editor, sidebar, and floating-window backgrounds. Switch themes for the current
+session with `:colorscheme gruvbox` or `:colorscheme tokyonight`. To make Tokyo
+Night the startup theme, change `colorscheme = "gruvbox"` to
+`colorscheme = "tokyonight"` in `lua/plugins/gruvbox.lua`.
 
 ## Markdown preview
 
