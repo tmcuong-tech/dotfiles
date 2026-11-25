@@ -97,7 +97,7 @@ local function build_steps(file, ft, name, exe)
         return nil, "nasm is not installed (required for NASM syntax; install it with Mason or your package manager)"
       end
       local obj = vim.fs.joinpath(output_dir(), name .. ".o")
-      local format = platform.is_windows and "win64" or "elf64"
+      local format = platform.is_windows and "win64" or (platform.is_macos and "macho64" or "elf64")
       local assemble = { "nasm", "-g", "-f", format, file, "-o", obj }
       local link = { "gcc", "-g", obj, "-o", exe }
       if not platform.is_windows then

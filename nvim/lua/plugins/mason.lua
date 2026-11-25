@@ -15,11 +15,24 @@ return {
         "rust-analyzer", -- required by rustaceanvim
         -- Formatters / debuggers
         "clang-format",
+        "prettier",
+        "shfmt",
         "debugpy", -- provides `debugpy-adapter` for nvim-dap-python
         "codelldb", -- C/C++/Rust debugging
         -- Editor helpers
         "stylua",
       })
+
+      -- LazyVim extras also add some of these tools. Keep one install request
+      -- per Mason package so overlapping extras do not start duplicate jobs.
+      local seen = {}
+      opts.ensure_installed = vim.tbl_filter(function(package)
+        if seen[package] then
+          return false
+        end
+        seen[package] = true
+        return true
+      end, opts.ensure_installed)
     end,
   },
 
@@ -29,7 +42,6 @@ return {
     "jay-babu/mason-nvim-dap.nvim",
     optional = true,
     opts = {
-      ensure_installed = { "codelldb", "debugpy" },
       handlers = {
         python = function() end,
       },

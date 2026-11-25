@@ -64,7 +64,7 @@ function M.check_buffer(bufnr)
       vim.fn.delete(tmp)
       return {}
     end
-    local format = platform.is_windows and "win64" or "elf64"
+    local format = platform.is_windows and "win64" or (platform.is_macos and "macho64" or "elf64")
     output = vim.fn.system({ "nasm", "-f", format, "-o", platform.devnull(), tmp })
   else
     if vim.fn.executable("gcc") ~= 1 then

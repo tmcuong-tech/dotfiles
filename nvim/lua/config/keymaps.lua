@@ -2,6 +2,10 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
+-- Cycle through open buffers shown as tabs in the tabline.
+vim.keymap.set("n", "<Tab>", "<cmd>bnext<cr>", { desc = "Next Buffer" })
+vim.keymap.set("n", "<S-Tab>", "<cmd>bprevious<cr>", { desc = "Previous Buffer" })
+
 -- Build / run the current file (C, C++, assembly, Rust, Python).
 vim.keymap.set("n", "<leader>rb", function()
   require("util.build").build()

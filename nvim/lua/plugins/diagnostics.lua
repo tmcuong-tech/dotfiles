@@ -1,4 +1,4 @@
--- Pretty inline diagnostics that stay visible while typing in insert mode.
+-- Show inline messages only when the cursor is directly on a diagnostic.
 -- Neovim's built-in virtual text is disabled in lsp.lua to avoid duplicates.
 return {
   {
@@ -20,9 +20,10 @@ return {
     opts = {
       preset = "modern",
       options = {
-        enable_on_insert = true,
-        enable_on_select = true, -- keep messages while a completion menu is open
-        throttle = 0, -- recommended by the plugin when enabled in insert mode
+        enable_on_insert = false,
+        enable_on_select = false,
+        show_diags_only_under_cursor = true,
+        throttle = 0, -- update immediately as the cursor moves
         multilines = { enabled = true },
         show_source = { enabled = true, if_many = true },
         use_icons_from_diagnostic = true,

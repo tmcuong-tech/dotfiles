@@ -23,9 +23,19 @@ return {
         "markdown",
         "markdown_inline",
         "html",
+        "css",
         "yaml",
         "latex",
       })
+
+      local seen = {}
+      opts.ensure_installed = vim.tbl_filter(function(parser)
+        if seen[parser] then
+          return false
+        end
+        seen[parser] = true
+        return true
+      end, opts.ensure_installed)
     end,
   },
 }

@@ -11,7 +11,7 @@ Refer to the [documentation](https://lazyvim.github.io/installation) to get star
 | Diagnostics while typing (insert mode) | `update_in_insert = true` + `tiny-inline-diagnostic.nvim` | `lua/plugins/diagnostics.lua` |
 | Completion / signatures / snippets | `blink.cmp` (LSP, paths, snippets, buffer; auto docs and ghost text) | `lua/plugins/completion.lua` |
 | Debugging | `nvim-dap`, `nvim-dap-ui`, `gdb`, `codelldb`, `debugpy` | `lua/plugins/dap.lua`, `lua/util/dap.lua` |
-| Formatting | `conform.nvim` (clang-format, ruff, rustfmt) | `lua/plugins/formatting.lua` |
+| Formatting | `conform.nvim` (clang-format, ruff, rustfmt, stylua, shfmt, prettier) | `lua/plugins/formatting.lua` |
 | Linting | clangd (clang-tidy), ruff LSP, rust-analyzer | `lua/plugins/linting.lua` |
 | Parsers / filetypes | `nvim-treesitter` + assembly filetype detection | `lua/plugins/treesitter.lua`, `lua/config/options.lua` |
 | Assembly live errors | `gcc` / `nasm` check on the unsaved buffer | `lua/util/asm.lua`, `lua/config/autocmds.lua` |
@@ -29,17 +29,20 @@ priorities, and load events determine when plugins load, not filenames.
 ### Prerequisites (Windows and Linux)
 
 - Neovim 0.12.0 or newer, built with LuaJIT; Git 2.19 or newer.
+- Node.js is needed by Mason's `pyright` and `prettier` packages.
 - `curl`, `tar`, a C compiler, and `tree-sitter` CLI 0.26.1 or newer. Install
   the CLI from the OS package manager (not npm); the locked Treesitter main
   branch uses it to install parsers.
-- For the build/run mappings: `gcc` and `g++`; for Rust: `rustc` and `cargo`;
-  for Python: `python` or `python3`. NASM is only needed for NASM-syntax files.
+- For the build/run mappings: GCC-compatible `gcc` and `g++`; for Rust:
+  `rustc`, `cargo`, and the `rustfmt` component; for Python: `python` or
+  `python3`. NASM is only needed for NASM-syntax files. On Windows, use MinGW
+  GCC or another GCC toolchain that provides both `gcc` and `g++`.
 
 1. Open Neovim and run `:Lazy sync` — installs plugins and the treesitter
    parsers listed in `lua/plugins/treesitter.lua`.
 2. Run `:Mason`, then press `I` to install the tools listed in
    `lua/plugins/mason.lua` (`clangd`, `clang-format`, `pyright`, `ruff`,
-   `rust-analyzer`, `debugpy`, `codelldb`, `stylua`).
+   `rust-analyzer`, `debugpy`, `codelldb`, `stylua`, `prettier`, `shfmt`).
 3. LaTeX formula rendering needs a converter. For a portable baseline on
    Windows and Linux, install the `latex2text` fallback with
    `uv tool install pylatexenc`. The config adds `~/.local/bin` and Mason's
