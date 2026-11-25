@@ -10,7 +10,7 @@ return {
     priority = 1000,
     keys = {
       {
-        "<leader>uI",
+        "<leader>uX",
         function()
           vim.cmd("TinyInlineDiag toggle")
         end,

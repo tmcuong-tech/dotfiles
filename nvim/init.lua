@@ -6,11 +6,15 @@
 -- a single invalid path on Windows and made Mason-installed tools (stylua,
 -- codelldb, asm-lsp, ...) undiscoverable.
 local platform = require("util.platform")
+local cargo_home = vim.env.CARGO_HOME
+if type(cargo_home) ~= "string" or cargo_home == "" then
+  cargo_home = vim.fn.expand("~/.cargo")
+end
 
 for _, bin in ipairs({
   vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "bin"),
   vim.fn.expand("~/.local/bin"),
-  vim.fn.expand("~/.cargo/bin"),
+  vim.fs.joinpath(cargo_home, "bin"),
 }) do
   platform.add_to_path(bin)
 end
