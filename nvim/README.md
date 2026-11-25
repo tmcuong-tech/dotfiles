@@ -64,11 +64,14 @@ priorities, and load events determine when plugins load, not filenames.
 
 ## Colorschemes
 
-Gruvbox is the startup theme. Tokyo Night is also installed with transparent
-editor, sidebar, and floating-window backgrounds. Switch themes for the current
-session with `:colorscheme gruvbox` or `:colorscheme tokyonight`. To make Tokyo
-Night the startup theme, change `colorscheme = "gruvbox"` to
-`colorscheme = "tokyonight"` in `lua/plugins/gruvbox.lua`.
+Gruvbox is the startup theme. Tokyo Night is installed with transparent editor,
+sidebar, and floating-window backgrounds. One Dark is installed from
+[`joshdick/onedark.vim`](https://github.com/joshdick/onedark.vim) with transparent
+editor, sidebar, and floating-window backgrounds, true color enabled,
+end-of-buffer markers hidden, and terminal italics disabled. Switch
+themes for the current session with `:colorscheme gruvbox`,
+`:colorscheme tokyonight`, or `:colorscheme onedark`. To make another theme the
+startup theme, change the `colorscheme` value in `lua/plugins/gruvbox.lua`.
 
 ## Markdown preview
 
