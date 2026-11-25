@@ -10,8 +10,8 @@ return {
         "clangd",
         "pyright",
         "ruff", -- also used as the Python formatter and linter
-        -- asm-lsp is installed manually from its GitHub release: Mason builds
-        -- it from source and that fails against OpenSSL 4. See README.md.
+        -- Install asm-lsp separately with Cargo or a matching release binary;
+        -- see README.md for the cross-platform setup.
         "rust-analyzer", -- required by rustaceanvim
         -- Formatters / debuggers
         "clang-format",

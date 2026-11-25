@@ -10,6 +10,7 @@ local platform = require("util.platform")
 for _, bin in ipairs({
   vim.fs.joinpath(vim.fn.stdpath("data"), "mason", "bin"),
   vim.fn.expand("~/.local/bin"),
+  vim.fn.expand("~/.cargo/bin"),
 }) do
   platform.add_to_path(bin)
 end

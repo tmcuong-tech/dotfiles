@@ -16,7 +16,7 @@ Refer to the [documentation](https://lazyvim.github.io/installation) to get star
 | Parsers / filetypes | `nvim-treesitter` + assembly filetype detection | `lua/plugins/treesitter.lua`, `lua/config/options.lua` |
 | Assembly live errors | `gcc` / `nasm` check on the unsaved buffer | `lua/util/asm.lua`, `lua/config/autocmds.lua` |
 | Tool installation | `mason.nvim` + manual `asm-lsp` binary | `lua/plugins/mason.lua` |
-| Markdown preview | `render-markdown.nvim` (full-buffer) | `lua/plugins/render-markdown.lua`, `scripts/setup-markdown.sh` |
+| Markdown preview | `render-markdown.nvim` (full-buffer) | `lua/plugins/render-markdown.lua` |
 
 Every file under `lua/plugins/` is a standalone lazy.nvim spec. Add a new file
 there to extend the setup without touching the others. lazy.nvim loads them in
@@ -29,23 +29,20 @@ alphabetical order, so use that if one spec needs to override another.
 2. Run `:Mason`, then press `I` to install the tools listed in
    `lua/plugins/mason.lua` (`clangd`, `clang-format`, `pyright`, `ruff`,
    `rust-analyzer`, `debugpy`, `codelldb`, `stylua`).
-3. Install the optional LaTeX dependency used by `render-markdown.nvim`:
-
-   ```sh
-   ./scripts/setup-markdown.sh
-   ```
-
-   This installs `latex2text` through `pipx` (or `uv`), so
-   `:checkhealth render-markdown` has no LaTeX warning.
-4. `asm-lsp` is installed manually because Mason's source build fails with
-   OpenSSL 4 on this machine:
-
-   ```sh
-   curl -fsSL https://github.com/bergercookie/asm-lsp/releases/download/v0.10.1/asm-lsp-x86_64-unknown-linux-gnu.tar.gz \
-     | tar -xz -C ~/.local/bin
-   ```
-
-   `~/.local/bin` and Mason's `bin/` are added to `$PATH` in `init.lua`.
+3. LaTeX formula rendering needs a converter. For a portable baseline on
+   Windows and Linux, install the `latex2text` fallback with
+   `uv tool install pylatexenc`. The config adds `~/.local/bin` and Mason's
+   `bin/` directory to PATH using the platform's correct path separator. For
+   the stacked fractions and roots shown in the examples, install the optional
+   `utftex` executable from [libtexprintf](https://github.com/bartp5/libtexprintf)
+   and place it in `~/.local/bin` (or another directory on PATH); its binaries
+   must match the machine's OS and CPU architecture. On Windows the config sets
+   `PYTHONIOENCODING=utf-8` for `latex2text` so Unicode math symbols work in
+   the console. Check converter detection with `:checkhealth render-markdown`.
+4. `asm-lsp` is not installed by Mason. On Windows and Linux, install it with
+   `cargo install asm-lsp`, or download a release binary matching the machine's
+   OS and CPU architecture. `~/.cargo/bin`, `~/.local/bin`, and Mason's `bin/`
+   are added to PATH in `init.lua` on each OS.
 5. `asm-lsp` only publishes diagnostics on save. Live insert-mode assembly
    errors are produced by `lua/util/asm.lua` (GAS via `gcc`, NASM via `nasm`).
    For NASM projects, add a `.asm-lsp.toml` with `[opts] compiler = "nasm"` so
@@ -55,7 +52,11 @@ alphabetical order, so use that if one spec needs to override another.
 ## Markdown preview
 
 `render-markdown.nvim` loads automatically for Markdown files and renders the
-whole buffer, including long tables. It uses the upstream `lazy` preset.
+whole buffer, including long tables. The configuration enables the visual
+components shown in the upstream examples: colored headings, code blocks,
+bullets, checkboxes, quotes and callouts, links, tables, and LaTeX formulas.
+Image links receive an icon; the plugin does not display the image itself.
+Icons look best with a Nerd Font configured in the terminal.
 
 | Command / key | Action |
 | --- | --- |
