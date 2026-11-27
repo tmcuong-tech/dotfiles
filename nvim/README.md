@@ -3,6 +3,36 @@
 A starter template for [LazyVim](https://github.com/LazyVim/LazyVim).
 Refer to the [documentation](https://lazyvim.github.io/installation) to get started.
 
+## Configuration overview
+
+| Area | This configuration | Where it is defined |
+| --- | --- | --- |
+| Plugin manager / framework | `lazy.nvim` with LazyVim | `lua/config/lazy.lua` |
+| Configuration language | Lua | `init.lua`, `lua/` |
+| Organization | Modular: core settings, plugin specs, and helper modules are separate | `lua/config/`, `lua/plugins/`, `lua/util/` |
+| LSP | Native Neovim LSP API through `nvim-lspconfig` and LazyVim language extras | `lazyvim.json`, `lua/plugins/lsp.lua` |
+| Completion | `blink.cmp` | `lua/plugins/completion.lua` |
+| Formatting | `conform.nvim`, with formatters selected by filetype | `lua/plugins/formatting.lua` |
+| Syntax parsing | `nvim-treesitter` | `lua/plugins/treesitter.lua` |
+| Customization | High; plugin specs and helper behavior can be extended independently | `lua/plugins/`, `lua/util/` |
+
+LazyVim extras are the baseline for supported language integrations. The extras
+enabled in `lazyvim.json` provide the C/C++, Python, Rust, debugging, and Alpha
+integrations. Local plugin specs customize or fill gaps: for example,
+`lua/plugins/lsp.lua` sets diagnostics and server options, while
+`lua/plugins/formatting.lua` selects formatters. This keeps the source of each
+behavior visible and avoids configuring the same server or feature twice.
+
+The current files are small enough to keep one plugin spec per feature. If the
+LSP setup grows substantially, split server-specific definitions into files
+under `lua/plugins/lsp/` and import that directory from the plugin spec system;
+until then, `lua/plugins/lsp.lua` is the single place to inspect local LSP
+overrides. This repository's Lua style is defined in `stylua.toml`, and its
+C/C++ fallback style is recorded in `.clang-format` to match the LLVM fallback
+configured for Conform. For other projects, keep project-specific rules in
+that project's formatter files (such as `.clang-format`, `stylua.toml`, or
+Prettier configuration) rather than in Neovim's global plugin setup.
+
 ## Minimum requirements
 
 - **Neovim 0.12.0 or newer**, built with LuaJIT.
