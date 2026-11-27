@@ -16,6 +16,10 @@ Refer to the [documentation](https://lazyvim.github.io/installation) to get star
 | Syntax parsing | `nvim-treesitter` | `lua/plugins/treesitter.lua` |
 | Customization | High; plugin specs and helper behavior can be extended independently | `lua/plugins/`, `lua/util/` |
 
+`lazy-lock.json` is the active plugin lockfile for this setup. `nvim-pack-lock.json`
+is not read by Lazy or this configuration; it is retained only as a reference
+snapshot for comparing against a `vim.pack` setup.
+
 LazyVim extras are the baseline for supported language integrations. The extras
 enabled in `lazyvim.json` provide the C/C++, Python, Rust, debugging, and Alpha
 integrations. Local plugin specs customize or fill gaps: for example,
@@ -27,11 +31,10 @@ The current files are small enough to keep one plugin spec per feature. If the
 LSP setup grows substantially, split server-specific definitions into files
 under `lua/plugins/lsp/` and import that directory from the plugin spec system;
 until then, `lua/plugins/lsp.lua` is the single place to inspect local LSP
-overrides. This repository's Lua style is defined in `stylua.toml`, and its
-C/C++ fallback style is recorded in `.clang-format` to match the LLVM fallback
-configured for Conform. For other projects, keep project-specific rules in
-that project's formatter files (such as `.clang-format`, `stylua.toml`, or
-Prettier configuration) rather than in Neovim's global plugin setup.
+overrides. This repository's Lua style is defined in `stylua.toml`. C/C++ style
+is project-owned: Conform uses the nearest project `.clang-format`, or LLVM as
+the fallback when none exists. Keep language-specific style files in the
+projects they govern rather than in Neovim's global configuration.
 
 ## Minimum requirements
 
@@ -54,7 +57,7 @@ for language tools and other optional dependencies.
 | Linting | clangd (clang-tidy), ruff LSP, rust-analyzer | `lua/plugins/linting.lua` |
 | Parsers / filetypes | `nvim-treesitter` + assembly filetype detection | `lua/plugins/treesitter.lua`, `lua/config/options.lua` |
 | Assembly live errors | `gcc` / `nasm` check on the unsaved buffer | `lua/util/asm.lua`, `lua/config/autocmds.lua` |
-| Tool installation | Mason plus Cargo or a matching release binary for `asm-lsp` | `lua/plugins/mason.lua` |
+| Tool installation | `mason-tool-installer.nvim` plus Cargo or a matching release binary for `asm-lsp` | `lua/plugins/mason.lua` |
 | Markdown preview | `render-markdown.nvim` (full-buffer) | `lua/plugins/render-markdown.lua` |
 | Git commands / UI | `vim-fugitive`, `lazygit.nvim` (plus LazyVim's Git UI) | `lua/plugins/fugitive.lua`, `lua/plugins/lazygit.lua` |
 | Alternate debugger | Vimspector with CodeLLDB and debugpy | `lua/plugins/vimspector.lua` |
@@ -80,9 +83,12 @@ supported dependency order on every machine.
 
 1. Open Neovim and run `:Lazy sync` — installs plugins and the treesitter
    parsers listed in `lua/plugins/treesitter.lua`.
-2. Run `:Mason`, then press `I` to install the tools listed in
-   `lua/plugins/mason.lua` (`clangd`, `clang-format`, `pyright`, `ruff`,
-   `rust-analyzer`, `debugpy`, `codelldb`, `stylua`, `prettier`, `shfmt`).
+2. Restart Neovim after syncing. `mason-tool-installer.nvim` automatically
+   installs the tools listed in `lua/plugins/mason.lua` after a short delay.
+   To run the install manually, use `:MasonToolsInstall`; use `:Mason` to
+   inspect package status. The configured tools are `clangd`, `clang-format`,
+   `pyright`, `ruff`, `rust-analyzer`, `debugpy`, `codelldb`, `stylua`,
+   `prettier`, and `shfmt`.
 3. LaTeX formula rendering needs a converter. For a portable baseline on
    Windows and Linux, install the `latex2text` fallback with
    `uv tool install pylatexenc`. The config adds `~/.local/bin` and Mason's
