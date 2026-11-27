@@ -137,36 +137,17 @@ function M.asm_syntax(path, lines)
   return gas > nasm and "gas" or "nasm"
 end
 
---- Does this machine provide a usable MSVC linker for Rust?
---- `link.exe` is normally only on PATH inside a Developer Prompt, so also ask
---- vswhere whether the C++ build tools are installed.
+--- Does this process have a usable MSVC environment for Rust?
+--- Visual Studio may be installed while Neovim was launched outside a
+--- Developer shell; in that case the compiler/linker are not available.
 ---@return boolean
-local function has_msvc_toolchain()
-  if vim.fn.executable("link.exe") == 1 or vim.fn.executable("cl.exe") == 1 then
-    return true
-  end
-  local program_files = vim.env["ProgramFiles(x86)"] or "C:\\Program Files (x86)"
-  local vswhere = vim.fs.joinpath(program_files, "Microsoft Visual Studio", "Installer", "vswhere.exe")
-  if vim.fn.filereadable(vswhere) == 0 then
-    return false
-  end
-  local out = vim.fn.system({
-    vswhere,
-    "-latest",
-    "-products",
-    "*",
-    "-requires",
-    "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
-    "-property",
-    "installationPath",
-  })
-  return vim.v.shell_error == 0 and out:match("%S") ~= nil
+local function has_msvc_environment()
+  return vim.fn.executable("cl.exe") == 1 and vim.fn.executable("link.exe") == 1
 end
 
---- On Windows the default Rust toolchain is often `*-pc-windows-msvc`, but
---- without Visual Studio Build Tools it cannot link (`link.exe` not found).
---- When a GNU toolchain is installed next to it, select it for every Rust
---- process Neovim spawns (cargo, rustc, rust-analyzer) via RUSTUP_TOOLCHAIN.
+--- On Windows the default Rust toolchain is often `*-pc-windows-msvc`, but it
+--- cannot link unless Neovim inherited a Developer-shell environment. If that
+--- environment is absent, select an installed GNU toolchain instead.
 ---
 --- Override with: `vim.g.ide_auto_rust_toolchain = false`
 --- or by setting RUSTUP_TOOLCHAIN yourself.
@@ -185,12 +166,12 @@ function M.setup_rust_toolchain()
   if active:find("windows%-gnu") then
     return
   end
-  if has_msvc_toolchain() then
+  if has_msvc_environment() then
     return
   end
 
   local list = vim.fn.system({ "rustup", "toolchain", "list" })
-  local gnu = list:match("([%w%.%-_]*x86_64%-pc%-windows%-gnu)")
+  local gnu = list:match("([%w%.%-_]+%-pc%-windows%-gnu)")
   if gnu then
     vim.env.RUSTUP_TOOLCHAIN = gnu
     vim.g.ide_rust_toolchain = gnu

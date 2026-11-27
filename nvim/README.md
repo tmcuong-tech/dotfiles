@@ -16,9 +16,10 @@ Refer to the [documentation](https://lazyvim.github.io/installation) to get star
 | Syntax parsing | `nvim-treesitter` | `lua/plugins/treesitter.lua` |
 | Customization | High; plugin specs and helper behavior can be extended independently | `lua/plugins/`, `lua/util/` |
 
-`lazy-lock.json` is the active plugin lockfile for this setup. `nvim-pack-lock.json`
-is not read by Lazy or this configuration; it is retained only as a reference
-snapshot for comparing against a `vim.pack` setup.
+`lazy-lock.json` is the active plugin lockfile for this setup.
+`vim-pack-reference-lock.json` is an inactive comparison snapshot. It uses a
+different filename so Neovim's `vim.pack` health check does not mistake it for
+the active `nvim-pack-lock.json` file.
 
 LazyVim extras are the baseline for supported language integrations. The extras
 enabled in `lazyvim.json` provide the C/C++, Python, Rust, debugging, and Alpha
@@ -51,7 +52,7 @@ for language tools and other optional dependencies.
 | Startup dashboard | Alpha (LazyVim `ui.alpha` extra) | `lazyvim.json`, `lua/plugins/alpha.lua` |
 | LSP (C/C++, Python, Rust, Assembly) | `nvim-lspconfig` + LazyVim language extras | `lua/plugins/lsp.lua` |
 | Diagnostics while typing (insert mode) | `update_in_insert = true` + `tiny-inline-diagnostic.nvim` | `lua/plugins/diagnostics.lua` |
-| Completion / signatures / snippets | `blink.cmp` (LSP, paths, snippets, buffer; auto docs and ghost text) | `lua/plugins/completion.lua` |
+| Completion / signatures / snippets | `blink.cmp` (LSP, paths, snippets, buffer, LazyDev for Lua; auto docs and ghost text) | `lua/plugins/completion.lua` |
 | Debugging | `nvim-dap`, `nvim-dap-ui`, `gdb`, `codelldb`, `debugpy` | `lua/plugins/dap.lua`, `lua/util/dap.lua` |
 | Formatting | `conform.nvim` (clang-format, ruff, rustfmt, stylua, shfmt, prettier) | `lua/plugins/formatting.lua` |
 | Linting | clangd (clang-tidy), ruff LSP, rust-analyzer | `lua/plugins/linting.lua` |
@@ -80,6 +81,12 @@ supported dependency order on every machine.
   `rustc`, `cargo`, and the `rustfmt` component; for Python: `python` or
   `python3`. NASM is only needed for NASM-syntax files. On Windows, use MinGW
   GCC or another GCC toolchain that provides both `gcc` and `g++`.
+- On Windows, Rust can use either the MSVC toolchain or Rust's GNU toolchain.
+  For MSVC, install Visual Studio Build Tools with the C++ workload and launch
+  Neovim from a Developer PowerShell/Command Prompt so `cl.exe` and `link.exe`
+  are on `PATH`. Otherwise, install a matching `*-pc-windows-gnu` Rust toolchain
+  with `rustup`; Neovim selects it automatically when the MSVC tools are not
+  available in its environment. Set `RUSTUP_TOOLCHAIN` to override that choice.
 
 1. Open Neovim and run `:Lazy sync` — installs plugins and the treesitter
    parsers listed in `lua/plugins/treesitter.lua`.
@@ -207,8 +214,9 @@ use the mappings in Normal mode.
 | `<F5>` / `<F3>` / `<F4>` | Normal | Vimspector continue / stop / restart (`HUMAN` mappings) |
 
 Completion suggestions include LSP results, paths, snippets, and words from the
-current buffer. Documentation opens automatically, with ghost-text previews and
-signature help enabled. Formatting runs on save for configured filetypes.
+current buffer; LazyDev also completes Neovim Lua modules. Documentation opens
+automatically, with ghost-text previews and signature help enabled. Formatting
+runs on save for configured filetypes.
 
 The standard LazyVim mappings are also available and can vary by filetype and
 installed extra. Press `<leader>` and wait for the WhichKey menu to browse the
